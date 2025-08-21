@@ -8,6 +8,17 @@ const userSchema = new mongoose.Schema({
     password: String
 });
 
-const User = mongoose.model("User", userSchema);
+const workoutSchema = new mongoose.Schema({
+    userId: {type: mongoose.Schema.Types.ObjectId, ref: "User"}, //this links the workouts to the userschema so that each workout is linked to a user
+    exercise:  String,
+    sets: Number,
+    weight: Number,
+    reps: Number,
+    date: {type: Date, default: Date.now}
+});
 
-module.exports  = User;
+
+const User = mongoose.model("User", userSchema);
+const Workout =  mongoose.model("Workout", workoutSchema);
+
+module.exports  = {User, Workout};
