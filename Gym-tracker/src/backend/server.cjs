@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-const { userLoginValidation, userRegisterValidation, userValidation } = require("./middleware.cjs");
+const { userLoginValidation, userRegisterValidation } = require("./middleware.cjs");
 const { User, Workout } = require("./db.cjs");
+const { date } = require("zod/v4");
 
 const app = express();
 
@@ -16,22 +17,46 @@ app.post("/register",userRegisterValidation, function(req,res) {
 })
 
 //user login route
-app.post("/login", userLoginValidation, function(req,res) {
-    res.json({
-        msg: "User logged in!"
-    })
-})
-
-app.post("/tracker",userValidation, async function(req,res) {
-    const {exercise, sets, reps, weight} = req.body;
+app.post("/login", async function(req,res) {
+    const {username, password} = req.body;
 
     try {
+    const existingUser = await User.findOne({username, password});
+    if(!existingUser) {
+        return res.json({
+            msg: "User doesn't exist...Use valid credentials"
+        })
+    }
+
+    res.json({
+        msg: "User logged in!",
+        username: existingUser.username
+    })}catch(err) {
+    res.status(500).json({
+        msg: "Error..."
+    })
+}
+})
+
+app.post("/tracker", async function(req,res) {
+    const {username, exercise, sets, reps, weight} = req.body;
+
+try {
+    const existingUser = await User.findOne({username});
+    if(!existingUser) {
+    return res.json({
+            msg: "User does not exist"
+        })
+    }
+
+
+    
     const workout = new Workout({
+        username,
         exercise,
         sets,
         reps,
         weight,
-        userId: req.userId
     });
     await workout.save();
 
@@ -46,12 +71,19 @@ app.post("/tracker",userValidation, async function(req,res) {
 })
 
 
-app.get("/logs",userValidation, async function(req,res) {
+app.get("/logs/:username", async function(req,res) {
+    const {username} = req.params;
+
+    
+    const existingUser = await User.findOne({username});
+    if(!existingUser) {
+    return res.json({
+            msg: "User does not exist...Can't fetch data!"
+        })
+    }
 
     try {
-        const userId = req.userId;
-
-        const workout = await Workout.findOne({userId});
+        const workout = await Workout.find({username}).sort({date: -1});
 
         res.json({
             msg: "User Workouts",
