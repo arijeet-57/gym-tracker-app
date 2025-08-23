@@ -38,10 +38,19 @@ app.post("/login", async function(req,res) {
 }
 })
 
+
+
+//This route is for posting the workouts on the tracker
 app.post("/tracker", async function(req,res) {
-    const {username, exercise, sets, reps, weight} = req.body;
+    const {username, exercise, sets} = req.body;
 
 try {
+
+    let finalSets = sets.slice(0,4);  //makes sure the set is max to 4
+    while(finalSets.length < 4) {
+        finalSets.push({setNumber: finalSets.length + 1, weight: null, reps: null});
+    }
+
     const existingUser = await User.findOne({username});
     if(!existingUser) {
     return res.json({
@@ -49,14 +58,10 @@ try {
         })
     }
 
-
-    
     const workout = new Workout({
         username,
         exercise,
-        sets,
-        reps,
-        weight,
+        sets: finalSets
     });
     await workout.save();
 
@@ -71,6 +76,7 @@ try {
 })
 
 
+//This route is for getting the workout logs for the username specisfied in the local storage
 app.get("/logs/:username", async function(req,res) {
     const {username} = req.params;
 
