@@ -9,7 +9,7 @@ const navigate = useNavigate();
     const [message, setMessage] = useState("");
 
     async function handleInput(e) {
-        e.preventDefault();
+        e.preventDefault();   //prevents reload
 
             try{
                 const res = await fetch("http://localhost:3000/login", {
@@ -23,8 +23,12 @@ const navigate = useNavigate();
             const data = await res.json();
             setMessage(data.msg);
 
+            if(data.msg === "User logged in!") { 
+                localStorage.setItem("username", username); //saves the username in the local storage for the upcoming pages
+            }
+
             if (res.ok && data.msg === "User logged in!") {
-            navigate("/TrackerPage"); 
+            navigate("/Tracker"); 
             }
             }catch(err) {
                 setMessage("Error in fetching the data")

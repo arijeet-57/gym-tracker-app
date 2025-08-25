@@ -24,7 +24,7 @@ const navigate = useNavigate();
             setMessage(data.msg);
 
             if (res.ok && data.msg === "User registered!") {
-            navigate("/LoginPage"); 
+            navigate("/Login"); 
             }
             }catch(err) {
                 setMessage("Error in fetching the data")

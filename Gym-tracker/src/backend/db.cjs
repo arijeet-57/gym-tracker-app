@@ -11,11 +11,11 @@ const userSchema = new mongoose.Schema({
 const workoutSchema = new mongoose.Schema({
     username: {type: String, ref: "User"}, //this links the workouts to the userschema so that each workout is linked to a user
     exercise:  String,
-    sets: {
+    sets: [{
             setNumber: Number,
             weight: Number,
             reps: Number,
-    },
+    }],
     date: {type: Date, default: Date.now}
 });
 

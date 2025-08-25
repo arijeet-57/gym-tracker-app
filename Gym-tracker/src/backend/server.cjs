@@ -77,10 +77,10 @@ try {
 
 
 //This route is for getting the workout logs for the username specisfied in the local storage
-app.get("/logs/:username", async function(req,res) {
-    const {username} = req.params;
+app.get("/logs/", async function(req,res) {
+    const {username} = req.body;
 
-    
+    try {
     const existingUser = await User.findOne({username});
     if(!existingUser) {
     return res.json({
@@ -88,7 +88,7 @@ app.get("/logs/:username", async function(req,res) {
         })
     }
 
-    try {
+    
         const workout = await Workout.find({username}).sort({date: -1});
 
         res.json({
