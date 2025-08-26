@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 export function TrackerPage( ){
 
+  const navigate = useNavigate();
   const [username, setUsername] = useState(""); //this username will be stored in the local storage of the web and will be sent in each request for validation
   const [message, setMessage] = useState("");
   const[exercise, setExercise] = useState("");
@@ -36,7 +38,8 @@ export function TrackerPage( ){
         body:JSON.stringify({
           username: username,
           exercise: exercise,
-          sets: sets
+          sets: sets,
+          date: new Date().toISOString().split("T")[0]
         })
       });
 
@@ -57,6 +60,10 @@ export function TrackerPage( ){
     }catch(err) {
       setMessage("Error while saving exercise....")
     }
+  }
+
+  function navigateToLogs() {
+    navigate("/Logs");
   }
   
     return (
@@ -90,6 +97,8 @@ export function TrackerPage( ){
     <button onClick={handlesSubmit}>Add</button>
 
     {message && <p>{message}</p>}
+
+    <button onClick={navigateToLogs}>Logs Page</button>
         </div>
     )
 }

@@ -7,6 +7,7 @@ import { RegisterPage } from './components/Register'
 import { LoginPage } from './components/Login'
 import { TrackerPage } from './components/Tracker'
 import { LogsPage } from './components/Logs'
+import { LogsByDate } from './components/DatedLogs'
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
         <Route path='/Login' element={<LoginPage />} />
         <Route path='/Tracker' element={<TrackerPage />} />
         <Route path='/Logs' element={<LogsPage />} />
+        <Route path='/Logs/:date' element={<LogsByDate />}/>
         </Routes>
     </BrowserRouter>
     )

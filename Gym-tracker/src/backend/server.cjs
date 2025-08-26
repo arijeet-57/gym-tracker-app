@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const moment = require("moment-timezone");
 const { userLoginValidation, userRegisterValidation } = require("./middleware.cjs");
 const { User, Workout } = require("./db.cjs");
 const { date } = require("zod/v4");
@@ -42,7 +43,8 @@ app.post("/login", async function(req,res) {
 
 //This route is for posting the workouts on the tracker
 app.post("/tracker", async function(req,res) {
-    const {username, exercise, sets} = req.body;
+    const {username, exercise, sets, date} = req.body;
+    const isNow = moment().tz("Asia/Kolkata").format("YYYY-MM-DD");
 
 try {
 
@@ -61,8 +63,10 @@ try {
     const workout = new Workout({
         username,
         exercise,
-        sets: finalSets
+        sets: finalSets,
+        date: isNow
     });
+
     await workout.save();
 
     res.json({
@@ -77,8 +81,9 @@ try {
 
 
 //This route is for getting the workout logs for the username specisfied in the local storage
-app.get("/logs/", async function(req,res) {
-    const {username} = req.body;
+app.get("/logs/:username", async function(req,res) {
+    const {username} = req.params;
+    const {date} = req.query;
 
     try {
     const existingUser = await User.findOne({username});
@@ -88,8 +93,13 @@ app.get("/logs/", async function(req,res) {
         })
     }
 
+    let query = {username};
+    if(date) {
+
+        query.date = date;
+    }
     
-        const workout = await Workout.find({username}).sort({date: -1});
+        const workout = await Workout.find(query).sort({date : 1});
 
         res.json({
             msg: "User Workouts",
